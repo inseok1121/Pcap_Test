@@ -51,6 +51,7 @@ int main(int argc, char **argv){
     struct  pcap_pkthdr header;
     const u_char *packet;
     int res,i;
+    int check;
     int size_ip, size_tcp;
     u_char buf[20];
     char *data;
@@ -62,9 +63,9 @@ int main(int argc, char **argv){
     printf("DEVICE : %s\n", dev);
     handle = pcap_open_live(dev, BUFSIZ, 0, -1, errbuf);
 
-    pcap_compile(handle, &fp, "PORT 80", 0, 0);
-    pcap_setfilter(handle, &fp);
+    check = pcap_compile(handle, &fp, "PORT 80", 0, 0);
 
+    check = pcap_setfilter(handle, &fp);
 
     while(1){
         res = pcap_next_ex(handle, &header, &packet);
@@ -80,7 +81,8 @@ int main(int argc, char **argv){
             //*****************************ETHERNET*****************//
             //******************************************************//
             ethernet = (struct Header_ETHERNET *)(packet);
-	    if(!(htons(ethernet->Ether_Type) == ETHERTYPE_IP)){
+
+           if(!(htons(ethernet->Ether_Type) == ETHERTYPE_IP)){
                 printf("This packet is not IP Packet!!\n");
                 continue;
             }
